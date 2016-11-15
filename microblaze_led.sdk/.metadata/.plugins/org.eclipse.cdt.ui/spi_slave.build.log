@@ -1,0 +1,21 @@
+21:02:43 **** Auto Build of configuration Debug for project spi_slave ****
+make all 
+'Building file: ../src/main.c'
+'Invoking: MicroBlaze gcc compiler'
+mb-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/main.o" -I../../spi_slave_bsp/microblaze_0/include -mlittle-endian -mcpu=v10.0 -mxl-soft-mul -Wl,--no-relax -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+'Finished building: ../src/main.c'
+' '
+'Building target: spi_slave.elf'
+'Invoking: MicroBlaze gcc linker'
+mb-gcc -Wl,-T -Wl,../src/lscript.ld -L../../spi_slave_bsp/microblaze_0/lib -mlittle-endian -mcpu=v10.0 -mxl-soft-mul -Wl,--no-relax -o "spi_slave.elf"  ./src/main.o ./src/xgpio_tapp_example.o ./src/xspi_selftest_example.o   -Wl,--start-group,-lxil,-lgcc,-lc,--end-group
+'Finished building target: spi_slave.elf'
+' '
+'Invoking: MicroBlaze Print Size'
+mb-size spi_slave.elf  |tee "spi_slave.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+  12056	    396	   3380	  15832	   3dd8	spi_slave.elf
+'Finished building: spi_slave.elf.size'
+' '
+
+21:02:43 Build Finished (took 327ms)
+

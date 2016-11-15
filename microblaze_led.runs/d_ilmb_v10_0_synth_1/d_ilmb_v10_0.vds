@@ -1,0 +1,46 @@
+#-----------------------------------------------------------
+# Vivado v2016.3 (64-bit)
+# SW Build 1682563 on Mon Oct 10 19:07:27 MDT 2016
+# IP Build 1681267 on Mon Oct 10 21:28:31 MDT 2016
+# Start of session at: Sun Nov 06 18:50:07 2016
+# Process ID: 9780
+# Current directory: D:/Nora/cmod_a7_projects/microblaze_led/microblaze_led.runs/d_ilmb_v10_0_synth_1
+# Command line: vivado.exe -log d_ilmb_v10_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source d_ilmb_v10_0.tcl
+# Log file: D:/Nora/cmod_a7_projects/microblaze_led/microblaze_led.runs/d_ilmb_v10_0_synth_1/d_ilmb_v10_0.vds
+# Journal file: D:/Nora/cmod_a7_projects/microblaze_led/microblaze_led.runs/d_ilmb_v10_0_synth_1\vivado.jou
+#-----------------------------------------------------------
+source d_ilmb_v10_0.tcl -notrace
+Starting RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 349.191 ; gain = 138.227
+INFO: [Synth 8-638] synthesizing module 'd_ilmb_v10_0' [d:/Nora/cmod_a7_projects/microblaze_led/microblaze_led.srcs/sources_1/bd/d/ip/d_ilmb_v10_0/synth/d_ilmb_v10_0.vhd:89]
+INFO: [Synth 8-638] synthesizing module 'lmb_v10' [d:/Nora/cmod_a7_projects/microblaze_led/microblaze_led.srcs/sources_1/bd/d/ipshared/162e/hdl/lmb_v10_v3_0_vh_rfs.vhd:140]
+INFO: [Synth 8-638] synthesizing module 'FDS' [D:/Vivado/2016.3/scripts/rt/data/unisim_comp.v:4087]
+INFO: [Synth 8-256] done synthesizing module 'FDS' (1#1) [D:/Vivado/2016.3/scripts/rt/data/unisim_comp.v:4087]
+INFO: [Synth 8-256] done synthesizing module 'lmb_v10' (2#1) [d:/Nora/cmod_a7_projects/microblaze_led/microblaze_led.srcs/sources_1/bd/d/ipshared/162e/hdl/lmb_v10_v3_0_vh_rfs.vhd:140]
+INFO: [Synth 8-256] done synthesizing module 'd_ilmb_v10_0' (3#1) [d:/Nora/cmod_a7_projects/microblaze_led/microblaze_led.srcs/sources_1/bd/d/ip/d_ilmb_v10_0/synth/d_ilmb_v10_0.vhd:89]
+Finished RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 386.422 ; gain = 175.457
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 386.422 ; gain = 175.457
+INFO: [Device 21-403] Loading part xc7a15tcpg236-1
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.010 . Memory (MB): peak = 588.824 ; gain = 0.000
+Finished Constraint Validation : Time (s): cpu = 00:00:10 ; elapsed = 00:00:11 . Memory (MB): peak = 588.824 ; gain = 377.859
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:10 ; elapsed = 00:00:11 . Memory (MB): peak = 588.824 ; gain = 377.859
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:10 ; elapsed = 00:00:11 . Memory (MB): peak = 588.824 ; gain = 377.859
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:10 ; elapsed = 00:00:12 . Memory (MB): peak = 588.824 ; gain = 377.859
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:11 ; elapsed = 00:00:12 . Memory (MB): peak = 588.824 ; gain = 377.859
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:17 ; elapsed = 00:00:18 . Memory (MB): peak = 612.180 ; gain = 401.215
+Finished Timing Optimization : Time (s): cpu = 00:00:17 ; elapsed = 00:00:18 . Memory (MB): peak = 612.180 ; gain = 401.215
+Finished Technology Mapping : Time (s): cpu = 00:00:17 ; elapsed = 00:00:18 . Memory (MB): peak = 621.813 ; gain = 410.848
+Finished IO Insertion : Time (s): cpu = 00:00:17 ; elapsed = 00:00:19 . Memory (MB): peak = 621.813 ; gain = 410.848
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:17 ; elapsed = 00:00:19 . Memory (MB): peak = 621.813 ; gain = 410.848
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:17 ; elapsed = 00:00:19 . Memory (MB): peak = 621.813 ; gain = 410.848
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:17 ; elapsed = 00:00:19 . Memory (MB): peak = 621.813 ; gain = 410.848
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:18 ; elapsed = 00:00:19 . Memory (MB): peak = 621.813 ; gain = 410.848
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:18 ; elapsed = 00:00:19 . Memory (MB): peak = 621.813 ; gain = 410.848
+
+Report Cell Usage: 
++------+-----+------+
+|      |Cell |Count |
++------+-----+------+
+|1     |FDS  |     1|
++------+-----+------+
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:18 ; elapsed = 00:00:19 . Memory (MB): peak = 621.813 ; gain = 410.848
+synth_design: Time (s): cpu = 00:00:16 ; elapsed = 00:00:16 . Memory (MB): peak = 646.734 ; gain = 377.207

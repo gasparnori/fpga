@@ -1,0 +1,175 @@
+#include <stdio.h>
+#include "xparameters.h"
+#include "xil_cache.h"
+#include "xspi.h"
+#include "spi_header.h"
+#include "xgpio.h"
+#include "gpio_header.h"
+#include <stdbool.h>
+
+#define BLUE 0xFE
+#define RED 0xFB
+#define GREEN 0xFD
+#define OFF 0xFF
+#define WHITE 0xF0
+#define PINK  0xFA
+
+#define SPI_SLAVE		XPAR_SPI_S_DEVICE_ID
+#define SPI_MASTER		XPAR_SPI_M_DEVICE_ID
+u8 SPI_t(XSpi *SpiInstancePtr, u8 message);
+int run_Tests();
+int initSPI(XSpi *SpiInstancePtr, u16 deviceId, bool master);
+void initLED_BLUE();
+void initRGB();
+void WriteRGB (u32 color);
+void WriteLED (u32 color);
+void extBtn();
+void RGBBtn();
+
+static XSpi SlaveInstance;
+static XSpi MasterInstance;
+XGpio LED_BLUE;
+XGpio RGB;
+XGpio ADC_control;
+int run_Tests(){
+	u32 DataRead;
+	if(SpiSelfTestExample(SPI_SLAVE)!=0){
+		printf("error with SPI slave\r\n");
+		return -1;
+	}
+	if(SpiSelfTestExample(SPI_MASTER)!=0){
+		printf("error with SPI master\r\n");
+		return -1;
+	}
+	 if(GpioInputExample(XPAR_AXI_GPIO_0_DEVICE_ID, &DataRead)!=0){
+			printf("error with GPIO 0\r\n");
+			return -1;
+		}
+	 if(GpioInputExample(XPAR_AXI_GPIO_1_DEVICE_ID, &DataRead)!=0){
+			printf("error with GPIO 1\r\n");
+			return -1;
+		}
+	printf("all good:)\r\n");
+	return 1;
+}
+int initSPI(XSpi *SpiInstancePtr, u16 deviceId, bool master){
+	printf("init SPI...");
+		XSpi_Config *ConfigPtr;
+		ConfigPtr = XSpi_LookupConfig(deviceId);
+		if (ConfigPtr == NULL) {
+			printf("error with the device ID\r\n");
+			return XST_FAILURE;
+		};
+		if(XSpi_CfgInitialize(SpiInstancePtr, ConfigPtr,ConfigPtr->BaseAddress)!= XST_SUCCESS) {
+			printf("error with initialization\r\n");
+			return XST_FAILURE;
+		};
+		if(XSpi_SetOptions(SpiInstancePtr, XSP_CLK_PHASE_1_OPTION |XSP_CLK_ACTIVE_LOW_OPTION)!= XST_SUCCESS) {
+			printf("error with settings\r\n");
+			return XST_FAILURE;
+		};
+		if (master){
+			if(XSpi_SetOptions(SpiInstancePtr,XSP_MASTER_OPTION)) {
+				printf("error with settings\r\n");
+				return XST_FAILURE;
+			};
+		}
+		XSpi_Start(SpiInstancePtr);
+		XSpi_IntrGlobalDisable(SpiInstancePtr);
+		return XST_SUCCESS;
+}
+void initLED_BLUE(){
+	XGpio_Config GPIO_1_conf;
+	GPIO_1_conf.BaseAddress = XPAR_AXI_GPIO_1_BASEADDR;
+	GPIO_1_conf.DeviceId = XPAR_AXI_GPIO_1_DEVICE_ID;
+	GPIO_1_conf.InterruptPresent = XPAR_GPIO_1_INTERRUPT_PRESENT;
+	GPIO_1_conf.IsDual = XPAR_GPIO_1_IS_DUAL;
+	XGpio_CfgInitialize(&LED_BLUE, &GPIO_1_conf, GPIO_1_conf.BaseAddress);
+	XGpio_SetDataDirection(&LED_BLUE, 1, 0);
+	XGpio_SetDataDirection(&LED_BLUE, 2, 1);
+	XGpio_DiscreteWrite(&LED_BLUE, 1, 0x00);
+}
+void initRGB(){
+	XGpio_Config GPIO_0_conf;
+	GPIO_0_conf.BaseAddress = XPAR_AXI_GPIO_0_BASEADDR;
+	GPIO_0_conf.DeviceId = XPAR_AXI_GPIO_0_DEVICE_ID;
+	GPIO_0_conf.InterruptPresent = XPAR_GPIO_0_INTERRUPT_PRESENT;
+	GPIO_0_conf.IsDual = XPAR_GPIO_0_IS_DUAL;
+	//Initialize the XGpio instance
+	XGpio_CfgInitialize(&RGB, &GPIO_0_conf, GPIO_0_conf.BaseAddress);
+	XGpio_SetDataDirection(&RGB, 2, 0);
+	WriteRGB(OFF);
+}
+void initADC(){
+	XGpio_Config GPIO_2_conf;
+	GPIO_2_conf.BaseAddress = XPAR_GPIO_2_BASEADDR;
+	GPIO_2_conf.DeviceId = XPAR_GPIO_2_DEVICE_ID;
+	GPIO_2_conf.InterruptPresent = XPAR_GPIO_2_INTERRUPT_PRESENT;
+	GPIO_2_conf.IsDual = XPAR_GPIO_2_IS_DUAL;
+	//Initialize the XGpio instance
+	XGpio_CfgInitialize(&ADC_control, &GPIO_2_conf, GPIO_2_conf.BaseAddress);
+	XGpio_SetDataDirection(&ADC_control, 2, 0);
+	XGpio_SetDataDirection(&ADC_control, 1, 1);
+	XGpio_DiscreteWrite(&ADC_control, 2, 0);
+}
+void WriteRGB (u32 color){
+	 XGpio_DiscreteWrite(&RGB, 2, color);
+}
+void WriteLED (u32 color){
+	 XGpio_DiscreteWrite(&LED_BLUE, 1, color);
+}
+void extBtn(){
+	if (XGpio_DiscreteRead(&LED_BLUE, 2) == 0x1) {
+	  WriteLED(OFF);
+	}
+	else{
+		  WriteLED(WHITE);
+	}
+}
+
+void RGBBtn(XSpi *SpiInstancePtr){
+	  if (XGpio_DiscreteRead(&RGB, 1) == 0x1) {
+		  WriteRGB(RED);
+		SPI_t(SpiInstancePtr, 0xF0);
+	  }
+	  else {
+		 WriteRGB(OFF);
+	  }
+
+}
+u8 SPI_t(XSpi *SpiInstancePtr, u8 message){
+	printf("sending message\r\n");
+	u8 received;
+	XSpi_SetSlaveSelect(SpiInstancePtr, 0x0);
+	XSpi_Transfer(SpiInstancePtr, &message, &received, 1);
+	XSpi_SetSlaveSelect(SpiInstancePtr, 0x1);
+	printf("received\r\n");
+	xil_printf("0x%x \r\n", received);
+	return received;
+}
+
+void startADC(){
+	 XGpio_DiscreteWrite(&ADC_control, 2, 0xFF);
+}
+int main() 
+{
+   Xil_ICacheEnable();
+   Xil_DCacheEnable();
+   //run_Tests(); //function to test if the hardware was configured correctly
+   initLED_BLUE();
+   initRGB();
+   initSPI(&SlaveInstance, SPI_SLAVE, false);
+   initSPI(&MasterInstance, SPI_MASTER, true);
+   printf("init done\r\n");
+   while(1){
+	RGBBtn(&MasterInstance);
+	//if data available
+	if (XGpio_DiscreteRead(&ADC_control, 2) == 0)){
+		WriteLED(OFF);
+	}
+	//extBtn();
+   }
+   Xil_DCacheDisable();
+   Xil_ICacheDisable();
+   return 0;
+}

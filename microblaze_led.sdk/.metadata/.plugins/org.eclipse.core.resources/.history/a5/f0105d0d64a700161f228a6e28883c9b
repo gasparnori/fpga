@@ -1,0 +1,145 @@
+
+#include <stdio.h>
+#include "xparameters.h"
+#include "xil_cache.h"
+#include "xgpio.h"
+#include "gpio_header.h"
+#include "xspi.h"
+#include "spi_header.h"
+
+#define BLUE 0xFE
+#define RED 0xFB
+#define GREEN 0xFD
+#define OFF 0xFF
+#define WHITE 0xF0
+#define PINK  0xFA
+
+#define SPI_DEVICE_ID		XPAR_SPI_0_DEVICE_ID
+#define BUFFER_SIZE		3
+
+XGpio LED_BLUE;
+XGpio RGB;
+
+//spi related variables
+static XSpi SpiInstance;
+u8 ReadBuffer[BUFFER_SIZE];
+u8 WriteBuffer[BUFFER_SIZE];
+
+int initSPI(XSpi *SpiInstancePtr){
+	XSpi_Config *ConfigPtr;
+	ConfigPtr = XSpi_LookupConfig(SPI_DEVICE_ID);
+	if (ConfigPtr == NULL) {
+		return XST_FAILURE;
+	};
+	if(XSpi_CfgInitialize(SpiInstancePtr, ConfigPtr,ConfigPtr->BaseAddress)!= XST_SUCCESS) {
+		return XST_FAILURE;
+	};
+	if(XSpi_SetOptions(SpiInstancePtr, XSP_CLK_PHASE_1_OPTION |XSP_CLK_ACTIVE_LOW_OPTION)!= XST_SUCCESS) {
+		return XST_FAILURE;
+	};
+	XSpi_Start(&SpiInstance);
+	XSpi_IntrGlobalDisable(SpiInstancePtr);
+	return XST_SUCCESS;
+}
+
+void initLED_BLUE(){
+	XGpio_Config GPIO_1_conf;
+	GPIO_1_conf.BaseAddress = XPAR_AXI_GPIO_1_BASEADDR;
+	GPIO_1_conf.DeviceId = XPAR_AXI_GPIO_1_DEVICE_ID;
+	GPIO_1_conf.InterruptPresent = XPAR_GPIO_1_INTERRUPT_PRESENT;
+	GPIO_1_conf.IsDual = XPAR_GPIO_1_IS_DUAL;
+	XGpio_CfgInitialize(&LED_BLUE, &GPIO_1_conf, GPIO_1_conf.BaseAddress);
+	XGpio_SetDataDirection(&LED_BLUE, 1, 0);
+	XGpio_SetDataDirection(&LED_BLUE, 2, 1);
+}
+void initRGB(){
+	XGpio_Config GPIO_0_conf;
+	GPIO_0_conf.BaseAddress = XPAR_AXI_GPIO_0_BASEADDR;
+	GPIO_0_conf.DeviceId = XPAR_AXI_GPIO_0_DEVICE_ID;
+	GPIO_0_conf.InterruptPresent = XPAR_GPIO_0_INTERRUPT_PRESENT;
+	GPIO_0_conf.IsDual = XPAR_GPIO_0_IS_DUAL;
+	//Initialize the XGpio instance
+	XGpio_CfgInitialize(&RGB, &GPIO_0_conf, GPIO_0_conf.BaseAddress);
+	XGpio_SetDataDirection(&RGB, 2, 0);
+}
+void WriteRGB (u32 color){
+	 XGpio_DiscreteWrite(&RGB, 2, color);
+}
+void WriteLED (u32 color){
+	 XGpio_DiscreteWrite(&LED_BLUE, 1, color);
+}
+
+u8 SPI_t(XSpi *SpiInstancePtr, u8 message){
+	u8 received;
+	XSpi_Transfer(SpiInstancePtr, &message, &received, 1);
+	//printf("received");
+	//xil_printf("0x%x \r\n", received);
+	return received;
+}
+/*u8 SPI_r(XSpi *SpiInstancePtr){
+	u8 received;
+	while ((XSpi_ReadReg(SpiInstancePtr->BaseAddr, XSP_SR_OFFSET) &XSP_SR_RX_EMPTY_MASK) == 0) {
+		   		received = XSpi_ReadReg((SpiInstancePtr->BaseAddr),XSP_DRR_OFFSET);
+		   	}
+	printf("received");
+	xil_printf("received: 0x%x \r\n", received);
+	return received;
+}*/
+u8 answer(u8 *prev){
+	u8 answer=0;
+	if (prev==240){
+		WriteRGB(PINK);
+		answer=42;
+	}
+	else{
+		WriteRGB(BLUE);
+		answer=0;
+
+	}
+	return answer;
+}
+int main() 
+{
+	Xil_ICacheEnable();
+	Xil_DCacheEnable();
+	initLED_BLUE();
+	initRGB();
+	initSPI(&SpiInstance);
+	print("\n\n start \r\n");
+	u8 buf_counter=0;
+	u8 prev_command=0;
+   ReadBuffer[0]=SPI_t(&SpiInstance, 0x00);
+   while(1){
+
+		for (buf_counter=0; buf_counter < BUFFER_SIZE; buf_counter++){
+			    	if (buf_counter==0){ prev_command= BUFFER_SIZE-1;}
+			    	else{prev_command=buf_counter-1;}
+
+					ReadBuffer[buf_counter]=SPI_t(&SpiInstance, answer(ReadBuffer[prev_command]));
+					xil_printf("received: %d , sending: %d \r\n", ReadBuffer[prev_command], buf_counter);
+		}
+
+		if (XGpio_DiscreteRead(&LED_BLUE, 2) == 0x1) {
+			  WriteLED(OFF);
+		  }
+		  else{
+			  WriteLED(WHITE);
+		}
+		  if (XGpio_DiscreteRead(&RGB, 1) == 0x1) {
+			  WriteRGB(RED);
+			  //WriteLED(OFF);
+			 // printf("LED_BLUE ON\r\n");
+		  }
+		  else {
+			 WriteRGB(OFF);
+			 //WriteLED(WHITE);
+			 //print("LED_BLUE OFF\r\n");
+
+		  }
+   }
+
+
+   Xil_DCacheDisable();
+   Xil_ICacheDisable();
+   return 0;
+}

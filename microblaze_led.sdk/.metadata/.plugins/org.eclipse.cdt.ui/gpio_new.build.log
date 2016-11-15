@@ -1,0 +1,31 @@
+21:01:47 **** Build of configuration Debug for project gpio_new ****
+make all 
+'Building file: ../src/testperiph.c'
+'Invoking: MicroBlaze gcc compiler'
+mb-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/testperiph.o" -I../../gpio_new_bsp/microblaze_0/include -mlittle-endian -mcpu=v10.0 -mxl-soft-mul -Wl,--no-relax -MMD -MP -MF"src/testperiph.d" -MT"src/testperiph.o" -o "src/testperiph.o" "../src/testperiph.c"
+'Finished building: ../src/testperiph.c'
+' '
+'Building file: ../src/xgpio_tapp_example.c'
+'Invoking: MicroBlaze gcc compiler'
+mb-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xgpio_tapp_example.o" -I../../gpio_new_bsp/microblaze_0/include -mlittle-endian -mcpu=v10.0 -mxl-soft-mul -Wl,--no-relax -MMD -MP -MF"src/xgpio_tapp_example.d" -MT"src/xgpio_tapp_example.o" -o "src/xgpio_tapp_example.o" "../src/xgpio_tapp_example.c"
+'Finished building: ../src/xgpio_tapp_example.c'
+' '
+'Building file: ../src/xspi_selftest_example.c'
+'Invoking: MicroBlaze gcc compiler'
+mb-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xspi_selftest_example.o" -I../../gpio_new_bsp/microblaze_0/include -mlittle-endian -mcpu=v10.0 -mxl-soft-mul -Wl,--no-relax -MMD -MP -MF"src/xspi_selftest_example.d" -MT"src/xspi_selftest_example.o" -o "src/xspi_selftest_example.o" "../src/xspi_selftest_example.c"
+'Finished building: ../src/xspi_selftest_example.c'
+' '
+'Building target: gpio_new.elf'
+'Invoking: MicroBlaze gcc linker'
+mb-gcc -Wl,-T -Wl,../src/lscript.ld -L../../gpio_new_bsp/microblaze_0/lib -mlittle-endian -mcpu=v10.0 -mxl-soft-mul -Wl,--no-relax -o "gpio_new.elf"  ./src/testperiph.o ./src/xgpio_tapp_example.o ./src/xspi_selftest_example.o   -Wl,--start-group,-lxil,-lgcc,-lc,--end-group
+'Finished building target: gpio_new.elf'
+' '
+'Invoking: MicroBlaze Print Size'
+mb-size gpio_new.elf  |tee "gpio_new.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+  10588	    396	   3280	  14264	   37b8	gpio_new.elf
+'Finished building: gpio_new.elf.size'
+' '
+
+21:01:47 Build Finished (took 642ms)
+

@@ -1,0 +1,2 @@
+   text	   data	    bss	    dec	    hex	filename
+  10976	    352	   3248	  14576	   38f0	spi_slave_bsp_xspi_slave_polled_example_1.elf
